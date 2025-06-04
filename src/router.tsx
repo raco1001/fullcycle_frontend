@@ -1,16 +1,23 @@
-import {
-  Route,
-  createBrowserRouter,
-  createRoutesFromElements,
-} from 'react-router-dom'
-import { IndexPage } from './pages/Index'
-import { JoinPage } from './pages/Join'
+import { createBrowserRouter, RouteObject } from 'react-router-dom';
+import App from './App';
+import IndexPage from './pages/Index';
+import LoginPage from './pages/Login';
+import JoinPage from './pages/Join';
+import NotePage from './pages/Note';
+import ErrorPage from './pages/Error';
 
-export const router = createBrowserRouter(
-  createRoutesFromElements(
-    <>
-      <Route index Component={IndexPage} />
-      <Route path="/join" Component={JoinPage} />
-    </>,
-  ),
-)
+const routes: RouteObject[] = [
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      { index: true, element: <IndexPage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'join', element: <JoinPage /> },
+      { path: 'notes/:noteId', element: <NotePage /> },
+      { path: '*', element: <ErrorPage /> },
+    ],
+  },
+];
+
+export const router = createBrowserRouter(routes);

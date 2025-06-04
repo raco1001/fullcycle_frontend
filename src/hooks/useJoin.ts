@@ -1,20 +1,23 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
+import { requestJoin, JoinParams } from '@/apis/requestJoin';
 
-export const useJoin = () => {
-  const queryClient = useQueryClient()
-  const joinMutation = useMutation({
+export function useJoin() {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: async (params: JoinParams) => {
-      const [error] = await requestJoin(params)
-      if (isAxiosError(error) && error.response?.status === 409) {
-        return { result: 'conflict' as const }
+      try {
+        await requestJoin(params);
+        return { result: 'success' as const };
+      } catch (error) {
+        if (isAxiosError(error) && error.response?.status === 409) {
+          return { result: 'conflict' as const };
+        }
+        throw error;
       }
-      if (error) {
-        throw error
-      }
-      return { result: 'success' as const }
     },
-    onSuccess: async () => {},
-  })
-  return { join: joinMutation.mutateAsync }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+    },
+  });
 }
