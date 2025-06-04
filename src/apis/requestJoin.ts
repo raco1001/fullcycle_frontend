@@ -4,5 +4,5 @@ export interface JoinParams {
   password: string
 }
 export async function requestJoin(params: JoinParams) {
-  await httpClient.post('/users', params)
+  await httpClient.post('/users/join', params)
 }

@@ -1,10 +1,10 @@
-import { httpClient } from '@/utils/http';
+import { httpClient } from '@/utils/http'
 
 export interface LoginParams {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export async function requestLogin(params: LoginParams) {
-  await httpClient.post('/login', params);
+  await httpClient.post('/auth/login', params)
 }

@@ -1,5 +1,5 @@
-import { httpClient } from '@/utils/http';
+import { httpClient } from '@/utils/http'
 
 export async function requestLogout() {
-  await httpClient.post('/logout');
+  await httpClient.post('/auth/logout')
 }

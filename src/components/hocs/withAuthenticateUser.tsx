@@ -1,18 +1,20 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useCurrentUser } from '@/hooks/userCurrentUser';
-import { User } from '@/types/user';
+import React from 'react'
+import { Navigate } from 'react-router-dom'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { User } from '@/types/user'
 
 export interface WithAuthenticateProps {
-  user: User;
+  user: User
 }
 
-export function withAuthenticateUser<P>(Component: React.ComponentType<P & WithAuthenticateProps>) {
+export function withAuthenticateUser<P>(
+  Component: React.ComponentType<P & WithAuthenticateProps>,
+) {
   return function Wrapper(props: P) {
-    const { data: user } = useCurrentUser();
+    const { data: user } = useCurrentUser()
     if (!user) {
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/login" replace />
     }
-    return <Component {...props} user={user} />;
-  };
+    return <Component {...props} user={user} />
+  }
 }
