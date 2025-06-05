@@ -16,8 +16,7 @@ export const IndexTemplate: React.FC = () => {
         메모는 클라우드에 저장되어 언제 어디서나 접근할 수 있습니다.
       </AppDescription>
       <ButtonGroup>
-        <StartLink to="join">무료로 시작하기</StartLink>
-        <StartLink to="login">로그인</StartLink>
+        <StartLink to="login">무료로 시작하기</StartLink>
       </ButtonGroup>
 
       <Footer>© 2023 Grepp Co.</Footer>
