@@ -6,6 +6,79 @@ import { useUpdateNote } from '@/hooks/useUpdateNote'
 import { useCreateNote } from '@/hooks/useCreateNote'
 import { useDeleteNote } from '@/hooks/useDeleteNote'
 import { useState, useEffect } from 'react'
+import styled from 'styled-components'
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+`
+
+const Actions = styled.div`
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+`
+
+const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #f1f3f5;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+`
+
+const StyledNoteTitleInput = styled(NoteTitleInput)`
+  border: none;
+  font-size: 2.5rem;
+  font-weight: bold;
+  padding: 0;
+  outline: none;
+  width: 100%;
+  background-color: transparent;
+  color: #212529;
+
+  &::placeholder {
+    color: #adb5bd;
+  }
+`
+
+const StyledNoteContentEditor = styled(NoteContentEditor)`
+  flex-grow: 1;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  padding: 0;
+  outline: none;
+  resize: none;
+  background-color: transparent;
+  color: #495057;
+
+  &::placeholder {
+    color: #adb5bd;
+  }
+`
 
 export default function NotePage() {
   const { noteId = '' } = useParams()
@@ -25,18 +98,21 @@ export default function NotePage() {
   const createMutation = useCreateNote()
   const deleteMutation = useDeleteNote()
   useEffect(() => {
-    if (!isCreateMode && note) {
+    if (isCreateMode) {
+      setTitle('')
+      setContent('')
+    } else if (note) {
       setTitle(note.title)
       setContent(note.content)
     }
-  }, [note, isCreateMode])
+  }, [noteId, note, isCreateMode])
 
   const handleSave = async () => {
     if (isCreateMode) {
       try {
         const createdNote = await createMutation.mutateAsync({ title, content })
         if (createdNote) {
-          navigate(`/notes`)
+          navigate(`/notes/${createdNote.id}`, { replace: true })
         }
       } catch (error) {
         console.error('Failed to create note:', error)
@@ -69,23 +145,43 @@ export default function NotePage() {
     }
   }
 
-  const currentTitle = isCreateMode ? title : (note?.title ?? title)
-  const currentContent = isCreateMode ? content : (note?.content ?? content)
+  const currentTitle = isCreateMode ? title : (note?.title ?? '')
+  const currentContent = isCreateMode ? content : (note?.content ?? '')
 
   return (
-    <div>
-      <NoteTitleInput value={currentTitle} onChange={setTitle} />
-      <NoteContentEditor value={currentContent} onChange={setContent} />
-      <button
-        onClick={handleSave}
-        disabled={createMutation.isPending || updateMutation.isPending}
-      >
-        {createMutation.isPending || updateMutation.isPending
-          ? 'Saving...'
-          : 'Save'}
-      </button>
-      <button onClick={() => navigate('/notes')}>Back to Notes</button>
-      <button onClick={handleDelete}>Delete</button>
-    </div>
+    <Container>
+      <Header>
+        <div style={{ flexGrow: 1, marginRight: '24px' }}>
+          <StyledNoteTitleInput
+            value={currentTitle}
+            onChange={setTitle}
+            placeholder="제목 없음"
+          />
+        </div>
+        <Actions>
+          <ActionButton
+            onClick={handleSave}
+            disabled={createMutation.isPending || updateMutation.isPending}
+          >
+            <span>💾</span>
+            <span>
+              {createMutation.isPending || updateMutation.isPending
+                ? '저장 중...'
+                : '저장'}
+            </span>
+          </ActionButton>
+          {!isCreateMode && (
+            <ActionButton
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
+            >
+              <span>🗑️</span>
+              <span>{deleteMutation.isPending ? '삭제 중...' : '삭제'}</span>
+            </ActionButton>
+          )}
+        </Actions>
+      </Header>
+      <StyledNoteContentEditor value={currentContent} onChange={setContent} />
+    </Container>
   )
 }

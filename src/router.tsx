@@ -4,7 +4,7 @@ import IndexPage from './pages/Index'
 import LoginPage from './pages/Login'
 import JoinPage from './pages/Join'
 import NotePage from './pages/Note'
-import NotesPage from './pages/Notes'
+import NotesLayout from './pages/NotesLayout'
 import ErrorPage from './pages/Error'
 
 const routes: RouteObject[] = [
@@ -15,8 +15,12 @@ const routes: RouteObject[] = [
       { index: true, element: <IndexPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'join', element: <JoinPage /> },
-      { path: 'notes', element: <NotesPage /> },
-      { path: 'notes/:noteId', element: <NotePage /> },
+      {
+        path: 'notes',
+
+        element: <NotesLayout />,
+        children: [{ path: ':noteId', element: <NotePage /> }],
+      },
       { path: '*', element: <ErrorPage /> },
     ],
   },
